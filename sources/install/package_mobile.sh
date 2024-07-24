@@ -6,21 +6,29 @@ source common.sh
 function install_mobile_apt_tools() {
     # CODE-CHECK-WHITELIST=add-aliases
     colorecho "Installing mobile apt tools"
-    fapt android-tools-adb zipalign apksigner apktool
+    fapt android-tools-adb zipalign apksigner
 
     add-history adb
     add-history zipalign
     add-history apksigner
-    add-history apktool
 
     add-test-command "adb --help"
     add-test-command "zipalign --help |& grep 'verbose output'"
     add-test-command "apksigner --version"
-    add-test-command "apktool --version"
 
     add-to-list "android-tools-adb,https://developer.android.com/studio/command-line/adb,A collection of tools for debugging Android applications"
     add-to-list "zipalign,https://developer.android.com/studio/command-line/zipalign,arguably the most important step to optimize your APK file"
     add-to-list "apksigner,https://source.android.com/security/apksigning,arguably the most important step to optimize your APK file"
+}
+
+function install_apktool() {
+    colorecho "Installing APKTool"
+    mkdir /opt/tools/apktool/
+    wget https://github.com/iBotPeaches/Apktool/releases/download/v2.9.3/apktool_2.9.3.jar -O /opt/tools/apktool/apktool.jar
+    wget https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/linux/apktool -O /opt/tools/apktool/apktool.sh 
+    add-aliases apktool
+    add-history apktool
+    add-test-command "apktool --version"
     add-to-list "apktool,https://github.com/iBotPeaches/Apktool,It is a tool for reverse engineering 3rd party / closed / binary Android apps."
 }
 
@@ -131,6 +139,7 @@ function package_mobile() {
     local end_time
     start_time=$(date +%s)
     install_mobile_apt_tools
+    install_apktool
     install_scrpy
     install_smali
     install_dex2jar
